@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Vue Slider</title>
+	<style>
+		img {
+			padding: 5px;
+		}
+	</style>
+</head>
+<body>
+	<div id="app">
+		<h2>{{ title }}</h2>
+	  <!--  -->
+
+	  <div id="preview">
+	  	<div v-for="(url, index) in urls">
+	  		<img :src="url">
+	  		<input type="file" @change="onFileChange($event, index)" />
+	  		<!-- <button @click="onFileChange">Edit</button> -->
+	  	</div>
+	  	
+	    <!-- <img v-if="url" :src="url" /> -->
+	  </div>
+
+	  <div>
+	  	<img width="100" height="100" :src="singleImage">
+	  </div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <script>
+      const vm = new Vue({
+		  el: '#app',
+		  data() {
+		    return {
+		    	title: 'Vue Image Preview',
+		      	urls: [
+		      		'https://via.placeholder.com/350x150',
+		      		'https://via.placeholder.com/360x150',
+		      		'https://via.placeholder.com/370x150',
+		      	],
+		      	singleImage: null
+		    }
+		  },
+		  methods: {
+		    onFileChange(e, index) {
+		    	const file = e.target.files[0];
+      			this.singleImage = URL.createObjectURL(file);
+      			this.urls[index] = URL.createObjectURL(file);
+		    	// this.singleImage = e.target;
+		      	// this.urls[index] = 
+		    }
+		  }
+		})
+    </script>
+</body>
+</html>
