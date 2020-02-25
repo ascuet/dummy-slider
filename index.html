@@ -12,6 +12,15 @@
 	<div id="app">
 		<h2>{{ title }}</h2>
 	  <!--  -->
+	  <button @click="addForm">Add</button>
+	  <div v-if="flag">
+	  	<input type="text" placeholder="title" name="">
+	  	<br>
+	  	<input type="file" name="">
+	  	<br>
+	  	<input type="submit" name="submit">
+	  </div>
+
 
 	  <div id="preview">
 	  	<div v-for="(url, index) in urls">
@@ -41,7 +50,8 @@
 		      		'https://via.placeholder.com/360x150',
 		      		'https://via.placeholder.com/370x150',
 		      	],
-		      	singleImage: null
+		      	singleImage: null,
+		      	flag : false
 		    }
 		  },
 		  methods: {
@@ -51,6 +61,9 @@
       			this.urls[index] = URL.createObjectURL(file);
 		    	// this.singleImage = e.target;
 		      	// this.urls[index] = 
+		    },
+		    addForm() {
+		    	this.flag = true
 		    }
 		  }
 		})
