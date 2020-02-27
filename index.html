@@ -5,31 +5,32 @@
 	<style>
 		img {
 			padding: 5px;
+			width: 100px;
+			height: 100px;
+		}
+		.preview {
+			border-bottom: 2px solid black;
 		}
 	</style>
 </head>
 <body>
 	<div id="app">
 		<h2>{{ title }}</h2>
+		<h3>Image Allowed: {{ repeatedFieldsAllowed }}</h3>
 	  <!--  -->
-	  <button @click="addForm">Add</button>
-	  <div v-if="flag">
-	  	<input type="text" placeholder="title" name="">
-	  	<br>
-	  	<input type="file" name="">
-	  	<br>
-	  	<input type="submit" name="submit">
-	  </div>
+	  <button @click="showAddForm">Add</button>
+	  	<div v-if="flag">
+		  <form>
+			<input type="file" @change="selectSliderImage($event)">
+		  </form>
+	    </div>
 
 
-	  <div id="preview">
-	  	<div v-for="(url, index) in urls">
-	  		<img :src="url">
+	  <div>
+	  	<div v-for="(url, index) in urls" class="preview">
+			<img :src="url">
 	  		<input type="file" @change="onFileChange($event, index)" />
-	  		<!-- <button @click="onFileChange">Edit</button> -->
 	  	</div>
-	  	
-	    <!-- <img v-if="url" :src="url" /> -->
 	  </div>
 
 	  <div>
@@ -48,23 +49,40 @@
 		      	urls: [
 		      		'https://via.placeholder.com/350x150',
 		      		'https://via.placeholder.com/360x150',
-		      		'https://via.placeholder.com/370x150',
+		      		'https://via.placeholder.com/370x150'
 		      	],
 		      	singleImage: null,
-		      	flag : false
+		      	flag : false,
+				repeatedFieldsAllowed: 4
 		    }
 		  },
 		  methods: {
 		    onFileChange(e, index) {
 		    	const file = e.target.files[0];
-      			this.singleImage = URL.createObjectURL(file);
-      			this.urls[index] = URL.createObjectURL(file);
-		    	// this.singleImage = e.target;
-		      	// this.urls[index] = 
+      			this.singleImage = URL.createObjectURL(file)
+      			this.urls[index] = URL.createObjectURL(file)
 		    },
-		    addForm() {
-		    	this.flag = true
-		    }
+		    showAddForm() {
+				var sliderCount = this.urls.length
+				if(sliderCount < this.repeatedFieldsAllowed){
+					this.flag = true
+				}
+				else {
+					alert("Limit Exceeds")
+				}	
+		    },
+			selectSliderImage(e) {
+				var sliderCount = this.urls.length
+				console.log('Allowed: '+this.repeatedFieldsAllowed+' and count'+ sliderCount)
+				if(sliderCount < this.repeatedFieldsAllowed){
+					const file = e.target.files[0];
+					this.urls.push(URL.createObjectURL(file)) 
+				}
+				else {
+					alert("Limit Exceeds")
+				}
+				
+			}
 		  }
 		})
     </script>
