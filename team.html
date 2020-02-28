@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team</title>
+    <style>
+        .container {
+            padding: 15px;
+        }
+        .left {
+            width : 65%;
+        }
+        .right {
+            width: 20%;
+            margin-left: 10px;
+        }
+        .col-6 {
+            float: left;
+            border: 1px solid gray; 
+        }
+        .team {
+            border: 2px solid gray;
+            padding: 2px;
+            float: left;
+        }
+        img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>{{ main_heading }}</h2>
+        <h3>Allowed Members: {{ allowedMembers }}</h3>
+        <div class="row">
+            <button @click="showAddForm">Add New Member</button>
+            <br><br>
+            <div class="col-6 left">
+                <div class="team" v-for="member in members">
+                    <p><b>Name: </b> {{ member.name }}</p>
+                    <p><b>URL: </b> {{ member.url }}</p>
+                    <p><b>Image: </b> <img :src="member.profileimg" alt=""></p>
+                    <p><b>Description: </b> {{ member.description }}</p>
+                </div>
+            </div>
+            <div class="col-6 right" v-if="visible">
+                <form @submit.prevent="submitForm">
+                    <input type="text" placeholder="Enter Full Name" v-model="newMember.name">
+                    <br>
+                    <input type="file" @change="selectImage($event)" >
+                    <br>
+                    <input type="url" placeholder="Enter URL" v-model="newMember.url">
+                    <br>
+                    <textarea cols="15" rows="5" placeholder="Enter Description" v-model="newMember.description"></textarea>
+                    <br>
+                    <input type="submit" value="Save">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: '.container',
+            data() {
+                return {
+                    main_heading: 'Our Team',
+                    members: [
+                        {
+                            "id": 1,
+                            "name": "Anik Sen",
+                            "url": "http://www.aniksen.com",
+                            "profileimg": "https://dummyimage.com/100x100/000/fff.jpg",
+                            "description": "Lorem Ipsum"
+                        },
+                        {
+                            "id": 2,
+                            "name": "Minhaz Hossain",
+                            "url": "http://www.minhaz.com",
+                            "profileimg": "https://dummyimage.com/100x100/000/fff.jpg",
+                            "description": "Lorem Ipsum"
+                        },
+                        {
+                            "id": 3,
+                            "name": "Taufique Sayeed",
+                            "url": "http://www.taufique.com",
+                            "profileimg": "https://dummyimage.com/100x100/000/fff.jpg",
+                            "description": "Lorem Ipsum"
+                        }
+                    ],
+                    allowedMembers: 4,
+                    visible: false,
+                    profileImg: '',
+                    newMember: {
+                        name: "",
+                        url: "",
+                        profileimg: "",
+                        description: ""
+                    }
+                }
+            },
+            methods: {
+                showAddForm (){
+                    var allowed = this.checkifExceed()
+                    if(allowed){
+                        alert("allowed")
+                        this.visible = true
+                    }
+                    else {
+                        alert("Not Allowed")
+                    }
+                        
+                    
+                    
+                },
+                selectImage (e){
+                    const file = e.target.files[0];
+      			    this.profileImg = URL.createObjectURL(file)
+                },
+                submitForm(e) {
+                    var name = this.newMember.name
+                    this.newMember.profileimg = this.profileImg
+                    this.members.push(this.newMember)
+                    alert("SUBMITTED")
+                    this.visible = false
+                    this.members.name = this.members.url= this.members.description = this.members.profileimg  = '';
+                },
+                checkifExceed(){
+                    var membersCount = this.members.length
+                    if(membersCount == this.allowedMembers){
+                        alert("Limit Exceeds")
+                        return false
+                    }
+                    else {
+                        return true
+                    }
+                }
+            }
+        })
+    </script>
+</body>
+</html>
