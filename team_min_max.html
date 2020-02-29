@@ -28,6 +28,9 @@
             width: 100px;
             height: 100px;
         }
+        .b-1{
+            border-bottom:  2px solid gray;
+        }
     </style>
 </head>
 <body>
@@ -47,10 +50,11 @@
                 </div>
             </div>
             <div class="col-6 right">
-                <form>
+                <form @submit.prevent="submitForm">
                     <dynamic-form
-                        v-for="form in forms"></dynamic-form>
-                    <input type="submit" value="Save">
+                        v-for="member in members"
+                        v-bind:m="member" v-bind:key="member.id"></dynamic-form>
+                        <input v-if="members.length>0" type="submit" value="Save">
                 </form>
             </div>
         </div>
@@ -61,15 +65,14 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script>
         Vue.component('dynamic-form', {
+                props: ['m'],
                 template: `
-                    <div>
-                        <input type="text" placeholder="Enter Full Name" >
+                    <div class="b-1">
+                        <input type="text" placeholder="Enter Full Name" v-model="m.name">
                         <br>
-                        <input type="file" >
+                        <input type="text" placeholder="Enter URL" v-model="m.url">
                         <br>
-                        <input type="url" placeholder="Enter URL" >
-                        <br>
-                        <textarea cols="15" rows="5" placeholder="Enter Description"></textarea>
+                        <textarea cols="15" rows="5" placeholder="Enter Description" v-model="m.description"></textarea>
                         <br>
                     </div>
                 `
@@ -82,23 +85,43 @@
                     minMembers: 2,
                     maxMembers: 3,
                     forms: 0,
-                    members: [],
+                    members: []
                 }
             },
             methods:{
-                populateForm(){
+                populateForm() {
                     this.membersCount()
                 },
-                membersCount(){
+                membersCount() {
                     var membersCount = this.members.length
-                    if(membersCount == this.maxMembers){
+                    if(membersCount == this.maxMembers) {
                         alert("Limit Exceeds")
                     }
-                    else if(membersCount==0){
+                    else if(membersCount == 0) {
                         this.forms = this.minMembers
+                        for(var i=0; i < this.minMembers; i++) {
+                            this.members.push({
+                                id: i,
+                                name: '',
+                                url: '',
+                                description: ''
+                            })
+                        }
                     }
-                    console.log(membersCount)
-                }
+                    else if(this.members.length < this.maxMembers) {
+                        this.members.push({
+                                id: 1111,
+                                name: '',
+                                url: '',
+                                description: ''
+                        })
+                    }
+                    
+                    console.log(this.members)
+                },
+                submitForm(e) {
+                    console.log(this.members.length+' members inserted')
+                },
             },
 
 
