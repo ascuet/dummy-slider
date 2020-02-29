@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team</title>
+    <style>
+        .container {
+            padding: 15px;
+        }
+        .left {
+            width : 65%;
+        }
+        .right {
+            width: 20%;
+            margin-left: 10px;
+        }
+        .col-6 {
+            float: left;
+            border: 1px solid gray; 
+        }
+        .team {
+            border: 2px solid gray;
+            padding: 2px;
+            float: left;
+        }
+        img {
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>{{ main_heading }}</h2>
+        <h3>Minimum Members: {{ minMembers }}</h3>
+        <h3>Maximum Members: {{ maxMembers }}</h3>
+        <div class="row">
+            <button @click="populateForm">Add New Member</button>
+            <br><br>
+            <div class="col-6 left">
+                <div class="team" >
+                    <p><b>Name: </b> </p>
+                    <p><b>URL: </b> </p>
+                    <p><b>Image: </b> </p>
+                    <p><b>Description: </b> </p>
+                </div>
+            </div>
+            <div class="col-6 right">
+                <form>
+                    <dynamic-form
+                        v-for="form in forms"></dynamic-form>
+                    <input type="submit" value="Save">
+                </form>
+            </div>
+        </div>
+
+        
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        Vue.component('dynamic-form', {
+                template: `
+                    <div>
+                        <input type="text" placeholder="Enter Full Name" >
+                        <br>
+                        <input type="file" >
+                        <br>
+                        <input type="url" placeholder="Enter URL" >
+                        <br>
+                        <textarea cols="15" rows="5" placeholder="Enter Description"></textarea>
+                        <br>
+                    </div>
+                `
+        });
+        new Vue({
+            el: '.container',
+            data() {
+                return {
+                    main_heading : 'Min Max Range',
+                    minMembers: 2,
+                    maxMembers: 3,
+                    forms: 0,
+                    members: [],
+                }
+            },
+            methods:{
+                populateForm(){
+                    this.membersCount()
+                },
+                membersCount(){
+                    var membersCount = this.members.length
+                    if(membersCount == this.maxMembers){
+                        alert("Limit Exceeds")
+                    }
+                    else if(membersCount==0){
+                        this.forms = this.minMembers
+                    }
+                    console.log(membersCount)
+                }
+            },
+
+
+        })
+    </script>
+</body>
+</html>
