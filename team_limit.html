@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML LIMIT</title>
+    <style>
+        .card {
+            padding: 5px;
+            border: 2px solid gray;
+            width: 200px;
+            float: left;
+        }
+        button {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h2>{{ heading }}</h2>
+        <h3>Min: {{ min }} ; Max: {{ max }}</h3>
+
+        <button @click="populateForm">Add</button>
+        
+        <form v-if="min > 0" @submit.prevent="submitForm($event)">
+            <div class="abcd">
+                <div class="card" v-for="(member, index) in members">
+                    <input type="text" placeholder="Enter Name" v-model="member.name">
+                    <br>
+                    <input type="text" placeholder="Enter URL" v-model="member.url">
+                    <br>
+                    <textarea cols="15" rows="5" placeholder="Enter Description" v-model="member.description"></textarea>
+                    <br>
+                    <input type="checkbox" id="active" v-model="member.active">
+                    <label for="active">Active</label>
+                </div>
+            </div>
+            
+            <div>
+                <input type="submit" value="Insert">
+            </div>
+        </form>
+        
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    heading: 'Team Limit',
+                    min: 2,
+                    max: 6,
+                    members: [],
+                    errors : {}
+                }
+            },
+            created() {
+                for(var i=0; i < this.min; i++) {
+                    this.members.push({ name :'', url : '', description: '', active : false})
+                } 
+            },
+            methods: {
+                submitForm(e) {
+                    console.log(this.members)
+                    axios.post('URL HERE', this.members).then(response => {
+                        alert('API CALL MADE');
+                    }).catch(error => {
+                        if (error.response.status === 422) {
+                            this.errors = error.response.data.errors || {};
+                        }
+                    });
+                },
+                populateForm() {
+                    if((this.members.length) < this.max) {
+                        this.members.push({ name :'', url : '', description: '', active : false})
+                    }
+                    else {
+                        alert("Limit Exceeds")
+                    } 
+                }
+            }
+        })
+    </script>
+</body>
+</html>
