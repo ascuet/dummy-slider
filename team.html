@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Team</title>
     <style>
         .container {
             padding: 15px;
         }
         .left {
-            width : 65%;
+            width : 70%;
         }
         .right {
             width: 20%;
@@ -28,6 +29,12 @@
             width: 100px;
             height: 100px;
         }
+        .view {
+            border-color: transparent;
+            background-color: initial;
+            color: initial
+        }
+
     </style>
 </head>
 <body>
@@ -37,39 +44,80 @@
         <div class="row">
             <button @click="showAddForm">Add New Member</button>
             <br><br>
+            <div v-if="editClicked">
+                <input type="text" v-model="members[editIndex][editProperty]">
+            </div>
             <div class="col-6 left">
-                <div class="team" v-for="member in members">
-                    <p><b>Name: </b> {{ member.name }}</p>
-                    <p><b>URL: </b> {{ member.url }}</p>
-                    <p><b>Image: </b> <img :src="member.profileimg" alt=""></p>
-                    <p><b>Description: </b> {{ member.description }}</p>
-                </div>
-            </div>
-            <div class="col-6 right" v-if="visible">
-                <form @submit.prevent="submitForm">
-                    <input type="text" placeholder="Enter Full Name" v-model="newMember.name">
-                    <br>
-                    <input type="file" @change="selectImage($event)" >
-                    <br>
-                    <input type="url" placeholder="Enter URL" v-model="newMember.url">
-                    <br>
-                    <textarea cols="15" rows="5" placeholder="Enter Description" v-model="newMember.description"></textarea>
-                    <br>
-                    <input type="submit" value="Save">
-                </form>
-            </div>
-        </div>
-    </div>
+                <div class="team" v-for="(member, index) in members">
 
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script>
-        new Vue({
-            el: '.container',
-            data() {
-                return {
-                    main_heading: 'Our Team',
-                    members: [
+                    <p @click="checkName(index, 'name')"><b>Name: </b> {{ member.name }} 
+
+                        <i :class="{'fa fa-pencil' : !editName}" style="font-size:16px"></i> 
+                        <!-- <div v-if="editName">
+                            <input v-on:keyup.enter="saveName(member.name)"  v-model="member.name" type="text" placeholder="Name">
+                        </div> -->
+                    </p> 
+                    
+                    <p @click="editUrl = ! editUrl"><b>URL: </b> {{ member.url }}
+                        <i :class="{'fa fa-pencil' : !editUrl}" style="font-size:16px"></i>
+                        <div >
+                            <!-- <input v-on:keyup.enter="saveUrl(member.url)" v-if="editUrl" v-model="member.url" type="text" placeholder="Name"> -->
+                        </div></p>
+
+                        <p @click="editImage = ! editImage"><b>Image: </b> <img :src="member.profileimg" alt="">
+                            <i :class="{'fa fa-pencil' : !editImage}" style="font-size:16px"></i>
+                            <div >
+                                <input v-on:keyup.enter="saveImage(member.profileimg)" v-if="editImage" v-model="member.profileimg" type="file">
+                            </div></p>
+                            <!-- <p @click="editDescipt = ! editDescipt"><b>Description: </b> {{ member.description }}
+                                <i :class="{'fa fa-pencil' : !editDescipt}" style="font-size:16px"></i>
+                                <div>
+                                    <input v-on:keyup.enter="saveDesc(member.description)" v-if="editDescipt" v-model="member.description" type="text" placeholder="Name">
+                                </div>
+                            </p> -->
+                        </div>
+                    </div>
+                    <div class="col-6 right" v-if="visible">
+                        <form @submit.prevent="submitForm">
+                            <input type="text" placeholder="Enter Full Name" v-model="newMember.name">
+                            <br>
+                            <input type="file" @change="selectImage($event)" >
+                            <br>
+                            <input type="url" placeholder="Enter URL" v-model="newMember.url">
+                            <br>
+                            <textarea cols="15" rows="5" placeholder="Enter Description" v-model="newMember.description"></textarea>
+                            <br>
+                            <input type="submit" value="Save">
+                        </form>
+                    </div>
+
+                    <div class="col-4 float-left">
+                        <p>Name: <strong> {{ newMember.name }} </strong></p>
+                        <p>URL: <strong> {{ newMember.url }} </strong></p>
+                        <p>Image: <strong> {{ newMember.profileimg }} </strong></p>
+                        <p>Description: <strong> {{ newMember.description }} </strong></p> 
+                    </div>
+                </div>
+
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+            <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+            <script>
+                new Vue({
+                    el: '.container',
+                    data() {
+                        return {
+                            editName: false,
+                            editUrl: false,
+                            editImage: false,
+                            editDescipt: false,
+                            editIndex: '',
+                            editProperty: '',
+                            main_heading: 'Our Team',
+                            editClicked: false,
+                            editValue: '',
+                            members: [
                         // {
                         //     "id": 1,
                         //     "name": "Anik Sen",
@@ -91,62 +139,92 @@
                         //     "profileimg": "https://dummyimage.com/100x100/000/fff.jpg",
                         //     "description": "Lorem Ipsum"
                         // }
-                    ],
-                    allowedMembers: 4,
-                    visible: false,
-                    profileImg: '',
-                    newMember: {
-                        name: "",
-                        url: "",
-                        profileimg: "",
-                        description: ""
+                        ],
+                        allowedMembers: 4,
+                        visible: false,
+                        profileImg: '',
+                        newMember: {
+                            name: "",
+                            url: "",
+                            profileimg: "",
+                            description: ""
+                        }
                     }
-                }
-            },
-            mounted() {
-                axios.get("http://aniksen.me/vue-data/members.php").then(response => {
-                    console.log(response.data)
-                    this.members = response.data
-                })
-            },
-            methods: {
-                showAddForm (){
-                    var allowed = this.checkifExceed()
-                    if(allowed){
-                        alert("allowed")
-                        this.visible = true
-                    }
-                    else {
-                        alert("Not Allowed")
-                    }
-                        
+                },
+                mounted() {
+                    axios.get("http://aniksen.me/vue-data/members.php").then(response => {
+                        console.log(response.data)
+                        this.members = response.data
+                    })
+                },
+                methods: {
+
+                    showAddForm (){
+                        var allowed = this.checkifExceed()
+                        if(allowed){
+                            alert("allowed")
+                            this.visible = true
+                        }
+                        else {
+                            alert("Not Allowed")
+                        }
                     
-                    
-                },
-                selectImage (e){
-                    const file = e.target.files[0];
-      			    this.profileImg = URL.createObjectURL(file)
-                },
-                submitForm(e) {
-                    var name = this.newMember.name
-                    this.newMember.profileimg = this.profileImg
-                    this.members.push(this.newMember)
-                    alert("SUBMITTED")
-                    this.visible = false
-                    this.members.name = this.members.url= this.members.description = this.members.profileimg  = '';
-                },
-                checkifExceed(){
-                    var membersCount = this.members.length
-                    if(membersCount == this.allowedMembers){
-                        alert("Limit Exceeds")
-                        return false
+
+                    },
+                    selectImage (e){
+                        const file = e.target.files[0];
+                        this.profileImg = URL.createObjectURL(file)
+                    },
+                    submitForm(e) {
+                        var name = this.newMember.name
+                        this.newMember.profileimg = this.profileImg
+                        this.members.push(this.newMember)
+                        alert("SUBMITTED")
+                        this.visible = false
+                        this.members.name = this.members.url= this.members.description = this.members.profileimg  = '';
+                    },
+                    checkifExceed(){
+                        var membersCount = this.members.length
+                        if(membersCount == this.allowedMembers){
+                            alert("Limit Exceeds")
+                            return false
+                        }
+                        else {
+                            return true
+                        }
+                    },
+                    saveName(name) {
+
+                        this.newMember.name = name;
+                        // axios.post("http://aniksen.me/vue-data/members.php",{
+                        //     name: this.newMember.name
+                        // }).then(response => {
+                        //     console.log('submitted successfully')
+                        // })
+                    },
+                    saveUrl(url) {
+                        this.newMember.url = url;
+                    },
+                    saveImage(img) {
+                        this.newMember.profileimg = img;
+                    },
+                    saveDesc(description) {
+                        this.newMember.description = description;
+                    },
+                    checkName(index, input_field) {
+                       // str = str.toString()
+                        // console.log(typeof(str))
+                        this.editValue = this.members[index][input_field]
+                        this.editClicked = true
+                        this.editIndex = index
+                        this.editProperty = input_field
+                        // console.log(this.members[0].str);
+                        this.editName = ! this.editName
                     }
-                    else {
-                        return true
-                    }
+
                 }
-            }
-        })
-    </script>
-</body>
-</html>
+
+            })
+        </script>
+    </body>
+    </html>
